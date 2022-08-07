@@ -5,25 +5,44 @@ import re
 import string
 import requests
 import telebot
+from telebot import types
 import config
 import urllib.parse
-from telebot import types
-from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
+
+# from googleapiclient.discovery import build
+# from google_auth_oauthlib.flow import InstalledAppFlow
+# from google.auth.transport.requests import Request
+# from google.oauth2.credentials import Credentials
 
 bot = telebot.TeleBot(config.TOKEN)
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
+allgroupsun = []
+libofgroups = ['ЭУЭ', 'АУС', 'ПМ', 'РСО', 'АТ', 'Т', 'ТРП', 'ВИЭ', 'ЭХП', 'ЭС', 'ИЭСм', 'ПМД', 'ЭПТ', 'ПИ', 'ИЗ', 'АУБ',
+               'ЭЖКХ', 'ПОВТ', 'ПЭ', 'ЭП', 'МР', 'ЭУЭм', 'ЭО', 'ПТС', 'КЭФ', 'Э', 'ИЗм', 'УИТ', 'ВЭ', 'ХТ', 'АВБ',
+               'ЭМК', 'ТВН']
+for i in range(len(libofgroups)):
+    allgroupsun.append(libofgroups[i] + '-1-18')
+    allgroupsun.append(libofgroups[i] + '-1-19')
+    allgroupsun.append(libofgroups[i] + '-1-20')
+    allgroupsun.append(libofgroups[i] + '-1-21')
+    allgroupsun.append(libofgroups[i] + '-1-22')
+    allgroupsun.append(libofgroups[i] + '-2-18')
+    allgroupsun.append(libofgroups[i] + '-2-19')
+    allgroupsun.append(libofgroups[i] + '-2-20')
+    allgroupsun.append(libofgroups[i] + '-2-21')
+    allgroupsun.append(libofgroups[i] + '-2-22')
+print(allgroupsun)
 
-group = ''
+
+def site(group):
+    thissite = (requests.get(url='https://eners.kgeu.ru/apish2.php?group=' + group + '&week=17&type=one').text)
+    return thissite
 
 
-def main(group):
+def main():
     days, corr, corrtime, ans, creds = ('Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница',
                                         'Суббота'), [], [], [], None
-    thissite = (requests.get(url='https://eners.kgeu.ru/apish2.php?group=' + group + '&week=17&type=one').text)
     """Shows basic usage of the Google Calendar API.
     # Prints the start and name of the next 10 events on the user's calendar.
     # """
@@ -43,7 +62,7 @@ def main(group):
     # service = build('calendar', 'v3', credentials=creds)
 
     # Editin string of site
-    for el in thissite.split():
+    for el in site(group).split():
         let = str(list(string.ascii_letters))
         new_string = el.translate(str.maketrans('', '', string.punctuation))
         s1 = re.sub(let, '', new_string)
@@ -72,20 +91,46 @@ def main(group):
         }
         # event = (service.events().insert(calendarId='primary', body=event).execute())
         # print('Event created: %s' % (event.get('htmlLink')))
-    return ans
+        return ans
 
 
-if __name__ == '__main__':
-    main(input())
+def chgngfortelegram(ans):
+    corrans = '\n'.join(ans)
+    return corrans
 
-# @bot.message_handler(content_types=['text'])
-# def get_messages(message):
-#     if message.text == '/start':
-#         bot.send_message(message.from_user.id,
-#                          "Привет! Я бот⏱. В нем ты сможешь автоматически ставить будильники для начала пар.В ответ пришли мне номер группы.")
-#     else:
-#         group = message.text
-#         bot.send_message(message.from_user.id, main(urllib.parse.quote(group)))
-#
-#
-# bot.polling(none_stop=True)
+
+@bot.message_handler(commands=['start'])
+def welcomin(message):
+    if message.text == '/start':
+        bot.send_message(message.from_user.id,
+                         "Привет! Я бот⏱. В нем ты сможешь автоматически ставить будильники для начала пар.В ответ пришли мне номер группы.")
+
+
+@bot.message_handler(content_types=['text'])
+def get_text(message):
+    if message.text in allgroupsun:
+        global group
+        group = message.text
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        pn = (main()[0])
+        vt = (main()[1])
+        sr = (main()[2])
+        ct = (main()[3])
+        pt = (main()[4])
+        sb = []
+        if len(main()) == 6:
+            sb = types.KeyboardButton(main()[5])
+            markup.add(pn[:5], vt[:5], sr[:5], ct[:5], pt[:5], sb[:5])
+        else:
+            markup.add(pn[:5], vt[:5], sr[:5], ct[:5], pt[:5])
+
+        bot.send_message(message.from_user.id,
+                         "Хорошо, выберите день на который хотите поставить будильник, Пройдите аунтефикацию в гугл",
+                         reply_markup=markup)
+        if message.text == (pn[:5] or vt[:5] or sr[:5] or ct[:5] or pt[:5] or sb[:5]):
+            bot.send_message(message.from_user.id, "Все готово, приятного пробуждения)))")
+    else:
+        bot.send_message(message.from_user.id, "Это не номер группы")
+
+
+bot.polling(none_stop=True)
