@@ -103,34 +103,53 @@ def chgngfortelegram(ans):
 def welcomin(message):
     if message.text == '/start':
         bot.send_message(message.from_user.id,
-                         "Привет! Я бот⏱. В нем ты сможешь автоматически ставить будильники для начала пар.В ответ пришли мне номер группы.")
+                         "Привет! Я AlarminBot. В нем ты сможешь автоматически ставить будильники для начала пар.Привязать группу можно через команду /setting")
+
+
+@bot.message_handler(commands=['setting'])
+def setts(message):
+    ass = (message.text)[:9]
+    if ass == '/setting':
+        bot.send_message(message.from_user.id, 'Введи группу')
+    global group
+    group = message.text[9:]
+    if group in allgroupsun:
+        bot.send_message(message.from_user.id, "Твоя группа " + group)
+    else:
+        bot.send_message(message.from_user.id, 'Это не название группы')
 
 
 @bot.message_handler(content_types=['text'])
 def get_text(message):
-    if message.text in allgroupsun:
-        global group
-        group = message.text
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        pn = (main()[0])
-        vt = (main()[1])
-        sr = (main()[2])
-        ct = (main()[3])
-        pt = (main()[4])
-        sb = []
-        if len(main()) == 6:
-            sb = types.KeyboardButton(main()[5])
-            markup.add(pn[:5], vt[:5], sr[:5], ct[:5], pt[:5], sb[:5])
-        else:
-            markup.add(pn[:5], vt[:5], sr[:5], ct[:5], pt[:5])
-
-        bot.send_message(message.from_user.id,
-                         "Хорошо, выберите день на который хотите поставить будильник, Пройдите аунтефикацию в гугл",
-                         reply_markup=markup)
-        if message.text == (pn[:5] or vt[:5] or sr[:5] or ct[:5] or pt[:5] or sb[:5]):
-            bot.send_message(message.from_user.id, "Все готово, приятного пробуждения)))")
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    pn = (main()[0])
+    vt = (main()[1])
+    sr = (main()[2])
+    ct = (main()[3])
+    pt = (main()[4])
+    allweek = 'Вся неделя'
+    sb = []
+    if len(main()) == 6:
+        sb = (main()[5])
+        markup.add(pn[:5], vt[:5], sr[:5], ct[:5], pt[:5], sb[:5], allweek)
     else:
-        bot.send_message(message.from_user.id, "Это не номер группы")
+        markup.add(pn[:5], vt[:5], sr[:5], ct[:5], pt[:5], allweek)
 
-
+    bot.send_message(message.from_user.id,
+                     "Хорошо, выберите день на который хотите поставить будильник, Пройдите аунтефикацию в гугл",
+                     reply_markup=markup)
+    if message.text == pn[:5]:
+        bot.send_message(message.from_user.id, "Все готово на понедельник стоит будильник, приятного пробуждения)))")
+    elif message.text == vt[:5]:
+        bot.send_message(message.from_user.id, "Все готово на вторник стоит будильник, приятного пробуждения)))")
+    elif message.text == sr[:5]:
+        bot.send_message(message.from_user.id, "Все готово на среду стоит будильник, приятного пробуждения)))")
+    elif message.text == vt[5:]:
+        bot.send_message(message.from_user.id, "Все готово на четверг стоит будильник, приятного пробуждения)))")
+    elif message.text == pt[5:]:
+        bot.send_message(message.from_user.id, "Все готово на пятницу стоит будильник, приятного пробуждения)))")
+    elif message.text == sb[5:]:
+        bot.send_message(message.from_user.id, "Все готово на субботу стоит будильник, приятного пробуждения)))")
+    else:
+        bot.send_message(message.from_user.id, "Все готово на всю неделю стоит будильник, приятного пробуждения)))")
 bot.polling(none_stop=True)
