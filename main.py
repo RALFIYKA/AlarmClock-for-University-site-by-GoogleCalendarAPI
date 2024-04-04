@@ -4,10 +4,10 @@ import datetime
 import re
 import string
 
-import config
+# import config
 import requests
-import telebot
-from telebot import types
+# import telebot
+# from telebot import types
 
 # from googleapiclient.discovery import build
 # from google_auth_oauthlib.flow import InstalledAppFlow
@@ -16,29 +16,34 @@ from telebot import types
 
 bot = telebot.TeleBot(config.TOKEN)
 
+
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-allgroupsun = []
-libofgroups = ['ЭУЭ', 'АУС', 'ПМ', 'РСО', 'АТ', 'Т', 'ТРП', 'ВИЭ', 'ЭХП', 'ЭС', 'ИЭСм', 'ПМД', 'ЭПТ', 'ПИ', 'ИЗ', 'АУБ',
-               'ЭЖКХ', 'ПОВТ', 'ПЭ', 'ЭП', 'МР', 'ЭУЭм', 'ЭО', 'ПТС', 'КЭФ', 'Э', 'ИЗм', 'УИТ', 'ВЭ', 'ХТ', 'АВБ',
-               'ЭМК', 'ТВН']
-for i in range(len(libofgroups)):
-    allgroupsun.append(libofgroups[i] + '-1-18')
-    allgroupsun.append(libofgroups[i] + '-1-19')
-    allgroupsun.append(libofgroups[i] + '-1-20')
-    allgroupsun.append(libofgroups[i] + '-1-21')
-    allgroupsun.append(libofgroups[i] + '-1-22')
-    allgroupsun.append(libofgroups[i] + '-2-18')
-    allgroupsun.append(libofgroups[i] + '-2-19')
-    allgroupsun.append(libofgroups[i] + '-2-20')
-    allgroupsun.append(libofgroups[i] + '-2-21')
-    allgroupsun.append(libofgroups[i] + '-2-22')
-print(allgroupsun)
+
+titulsite = requests.get(url='https://eners.kgeu.ru/'.text)
+print(titulsite)
+
+# allgroupsun = []
+# libofgroups = ['ЭУЭ', 'АУС', 'ПМ', 'РСО', 'АТ', 'Т', 'ТРП', 'ВИЭ', 'ЭХП', 'ЭС', 'ИЭСм', 'ПМД', 'ЭПТ', 'ПИ', 'ИЗ', 'АУБ',
+#                'ЭЖКХ', 'ПОВТ', 'ПЭ', 'ЭП', 'МР', 'ЭУЭм', 'ЭО', 'ПТС', 'КЭФ', 'Э', 'ИЗм', 'УИТ', 'ВЭ', 'ХТ', 'АВБ',
+#                'ЭМК', 'ТВН']
+# for i in range(len(libofgroups)):
+#     allgroupsun.append(libofgroups[i] + '-1-18')
+#     allgroupsun.append(libofgroups[i] + '-1-19')
+#     allgroupsun.append(libofgroups[i] + '-1-20')
+#     allgroupsun.append(libofgroups[i] + '-1-21')
+#     allgroupsun.append(libofgroups[i] + '-1-22')
+#     allgroupsun.append(libofgroups[i] + '-2-18')
+#     allgroupsun.append(libofgroups[i] + '-2-19')
+#     allgroupsun.append(libofgroups[i] + '-2-20')
+#     allgroupsun.append(libofgroups[i] + '-2-21')
+#     allgroupsun.append(libofgroups[i] + '-2-22')
+# print(allgroupsun)
 
 
 def site(group):
     thissite = (requests.get(url='https://eners.kgeu.ru/apish2.php?group=' + group + '&week=17&type=one').text)
-
     return thissite
+
 
 
 def main(group):
